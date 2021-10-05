@@ -1,0 +1,20 @@
+{
+    "name": "Aleth.ABuild.Editor",
+    "references": [
+        "GUID:17716cf652e69abcc8af6aec3f89630e",
+        "GUID:8647e08527359930db55e5aa67ea1c8c",
+        "GUID:9d3731f449fbdead48b7bb4683a483c0",
+        "GUID:359b4edcd0d953997abebc3b2938ea86"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
