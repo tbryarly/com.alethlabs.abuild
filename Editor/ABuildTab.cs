@@ -147,9 +147,37 @@ namespace AlethEditor.Prefs
         private void DrawOptions()
         {            
             DrawHeader("Build Options");
-            
-            // bool oldGUI = GUI.enabled;
-            // GUI.enabled = false;
+
+            DrawOutputPath();
+
+            ABuildPrefs.BuildGroup = (BuildGroups)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildGroup, "Targets");
+            ABuildPrefs.BuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildArch, "Architecture");
+
+            ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.IsDebugBuild, "Debug Build");
+
+            if (ABuildPrefs.IsDebugBuild)
+            {
+                DrawDebugOptions();
+            }
+
+            EditorGUILayout.Space();
+
+            DrawPaths();
+
+            if (GUILayout.Button("Build Selected"))
+            {
+                ABuildManager.BuildAll(ABuildPrefs.BuildGroup, ABuildPrefs.BuildArch, ABuildPrefs.IsDebugBuild);
+            }
+
+            ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile On Run");
+            if (GUILayout.Button("Run Last Build"))
+            {
+                ABuildManager.RunBuild(ABuildPrefs.RunDeepProfile);
+            }                      
+        }
+
+        private void DrawOutputPath()
+        {
             Rect pathRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             if (Event.current.type == EventType.MouseDown &&
                 Event.current.button == 0 &&
@@ -165,55 +193,37 @@ namespace AlethEditor.Prefs
                 GUIUtility.ExitGUI();
             }
             EditorGUI.TextField(pathRect, "Build Output Path", ABuildPrefs.BuildPath);
-
-            // ABuildPrefs.BuildPath = (string)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildPath, "Build Output Path");
-            // GUI.enabled = oldGUI;
-            ABuildPrefs.BuildGroup = (BuildGroups)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildGroup, "Targets");
-            ABuildPrefs.BuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildArch, "Architecture");
-
-            ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.IsDebugBuild, "Debug Build");
-
-            if (ABuildPrefs.IsDebugBuild)
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Space();
-                EditorGUILayout.BeginVertical();                           
-
-                ABuildPrefs.ABuildDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildDebugLevels, "Build Debug Level");
-
-                EditorGUILayout.LabelField("Set Debug State", EditorStyles.boldLabel);
-                ABuildPrefs.DebugUpdateContext = (ProjectScopes)EditorPrefAttribute.DrawPref(ABuildPrefs.DebugUpdateContext, "Scope to Update");
-                if (GUILayout.Button("Apply debug state"))
-                {
-                    Debug.Log("Apply to scope TBI!");
-                }
-
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space();
-                EditorGUILayout.EndHorizontal();
-            }
-
-            EditorGUILayout.Space();
-
-            if (GUILayout.Button("Build Selected"))
-            {
-                ABuildManager.BuildAll(ABuildPrefs.BuildGroup, ABuildPrefs.BuildArch, ABuildPrefs.IsDebugBuild);
-            }
-
-            ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile On Run");
-            if (GUILayout.Button("Run Last Build"))
-            {
-                ABuildManager.RunBuild(ABuildPrefs.RunDeepProfile);
-            }
-            
-
-            
         }
 
-        // private void DrawBuild()
-        // {
+        private void DrawDebugOptions()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical();
 
-        // }
+            ABuildPrefs.ABuildDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildDebugLevels, "Build Debug Level");
+
+            EditorGUILayout.LabelField("Set Debug State", EditorStyles.boldLabel);
+            ABuildPrefs.DebugUpdateContext = (ProjectScopes)EditorPrefAttribute.DrawPref(ABuildPrefs.DebugUpdateContext, "Scope to Update");
+            if (GUILayout.Button("Apply debug state"))
+            {
+                Debug.Log("Apply to scope TBI!");
+            }
+
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawPaths()
+        {
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Windows))
+                EditorGUILayout.TextField("Windows Path", ABuildInstructions.GetBuildPath(BuildGroups.Windows));
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Linux))
+                EditorGUILayout.TextField("Linux Path", ABuildInstructions.GetBuildPath(BuildGroups.Linux));
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Mac))
+                EditorGUILayout.TextField("Mac Path", ABuildInstructions.GetBuildPath(BuildGroups.Mac));
+        }
         #endregion
     }
 }

@@ -16,6 +16,8 @@ namespace AlethEditor.Build
     {
         public static string GetBuildPath(BuildGroups buildGroup)
         {
+            // REVIEW: if multiple, fail!
+            
             string retString = ABuildPrefs.BuildPath; 
 
             retString += $"{buildGroup}/";
