@@ -36,13 +36,11 @@ namespace AlethEditor.Prefs
             set { BuildPackageColumnWidth = value; }
         }
 
-        public override HeaderChangeTypes DrawGroup()
+        public override void DrawGroup()
         {
-            HeaderChangeTypes changeType = base.DrawGroup();
+            base.DrawGroup();
 
             ABuildPrefs.ABuildPackageDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildPackageDebugLevels, "Package Debug Level");
-
-            return changeType;
         }
         #endregion
     }

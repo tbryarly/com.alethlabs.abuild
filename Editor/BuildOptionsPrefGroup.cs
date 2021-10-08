@@ -37,9 +37,9 @@ namespace AlethEditor.Prefs
             set { BuildOptionsColumnWidth = value; }
         }
 
-        public override HeaderChangeTypes DrawGroup()
+        public override void DrawGroup()
         {
-            HeaderChangeTypes changeType = base.DrawGroup();
+            base.DrawGroup();
 
             DrawOutputPath();
 
@@ -67,8 +67,6 @@ namespace AlethEditor.Prefs
             {
                 ABuildManager.RunBuild(ABuildPrefs.RunDeepProfile);
             }
-
-            return changeType;
         }
         #endregion
 
