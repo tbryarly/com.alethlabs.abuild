@@ -1,4 +1,7 @@
-﻿using AlethEditor.Prefs;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using AlethEditor.Prefs;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -20,13 +23,13 @@ namespace AlethEditor.Build
             
             string retString = ABuildPrefs.BuildPath; 
 
-            retString += $"{buildGroup}/";
+            retString += $"/{buildGroup}/";
 
             retString += ((int)ABuildPrefs.BuildArch == 2) ? "x86_64/" : "x86/";
 
             retString += ABuildPrefs.IsDebugBuild ? "Debug/" : "Production/";
 
-            retString += "ELON";
+            retString += Application.productName;
 
             if (buildGroup == BuildGroups.Windows)
                 retString += ".exe";
@@ -44,7 +47,7 @@ namespace AlethEditor.Build
                                         bool debug = false)
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, GetBuildPath(BuildGroups.Windows)));
+            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Windows));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -54,13 +57,13 @@ namespace AlethEditor.Build
                 options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None,
             };
 
-            Debug.Log($"Building ELON for Windows to {path}.\nx64: {x64}\nDebug: {debug}");
+            Debug.Log($"Building {Application.productName} for Windows to {path}.\nx64: {x64}\nDebug: {debug}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.Log("Successfully built ELON for Win64. Opening folder now.");
-                System.Diagnostics.Process.Start(path.Replace(@"\ELON.exe", ""));
+                Debug.Log("Successfully built {Application.productName} for Win64. Opening folder now.");
+                System.Diagnostics.Process.Start(path.Replace(@"\{Application.productName}.exe", ""));
             }
             else
                 Debug.LogError("Build failed:\n" + result.summary);
@@ -91,7 +94,7 @@ namespace AlethEditor.Build
             //     PlayerPrefsManager.SetForceDebugLogging(false);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, GetBuildPath(BuildGroups.Linux)));
+            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Linux));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -101,13 +104,13 @@ namespace AlethEditor.Build
                 options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None
             };
 
-            Debug.Log($"Building ELON for Linux to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
+            Debug.Log($"Building {Application.productName} for Linux to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                string folderPath = path.Replace(@"/ELON." + (x64 ? "x86_64" : "x86"), "");
-                Debug.Log($"Successfully built ELON for Linux. Opening folder now ({folderPath}).");
+                string folderPath = path.Replace(@"/{Application.productName}." + (x64 ? "x86_64" : "x86"), "");
+                Debug.Log($"Successfully built {Application.productName} for Linux. Opening folder now ({folderPath}).");
                 System.Diagnostics.Process.Start(folderPath);                
             }
             else
@@ -139,11 +142,11 @@ namespace AlethEditor.Build
             //     PlayerPrefsManager.SetForceDebugLogging(false);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, GetBuildPath(BuildGroups.Mac)));
+            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Mac));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                // scenes = LevelManager.FullPathLevelList.ToArray(),
+                scenes = GetScenes(),
                 locationPathName = path,
                 target = BuildTarget.StandaloneOSX,
                 options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None
@@ -151,10 +154,10 @@ namespace AlethEditor.Build
 
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
-            Debug.Log($"Building ELON for Mac to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
+            Debug.Log($"Building {Application.productName} for Mac to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.Log("Successfully built ELON for Mac (debug).");
+                Debug.Log("Successfully built {Application.productName} for Mac (debug).");
                 System.Diagnostics.Process.Start(path);
 
                 if (runBuild)
@@ -162,6 +165,59 @@ namespace AlethEditor.Build
             }
             else
                 Debug.LogError("Build failed:\n" + result.summary);
+        }
+
+        public static string[] GetScenes()
+        {           
+            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.AllScenes))
+                return FindAllScenes();
+            
+            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFolders) ||
+                ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
+                return FinalLocalScenes(ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive));
+            
+            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.UseBuildSettings))
+                return GetBuildSettingScenes();          
+
+            return null;
+        }
+
+        private static string[] FindAllScenes()
+        {
+            List<string> retList = new List<string>();
+
+            string[] guids = AssetDatabase.FindAssets("t:scene");
+            foreach (string guid in guids)
+                retList.Add(AssetDatabase.GUIDToAssetPath(guid));
+
+            return retList.ToArray();
+        }
+
+        private static string[] FinalLocalScenes(bool isRecursive)
+        {
+            List<string> retList = new List<string>();
+
+            foreach (string path in ABuildPrefs.BuildSceneFolders)
+            {
+                foreach (string s in Directory.GetFiles(path, "*.unity", isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
+                {
+                    retList.Add(s);
+                }
+            }
+
+            return retList.ToArray();
+        }
+
+        private static string[] GetBuildSettingScenes()
+        {
+            List<string> retList = new List<string>();
+            
+            foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+            {
+                retList.Add($"Assets/{scene.path}");
+            }
+
+            return retList.ToArray();
         }
     }
 }
