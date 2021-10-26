@@ -51,7 +51,7 @@ namespace AlethEditor.Build
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                // scenes = LevelManager.TopFullPathLevelList.ToArray(),   // assumes all folders are for debug purposes and game scenes are all in top folder
+                scenes = GetScenes(),
                 locationPathName = path,
                 target = x64 ? BuildTarget.StandaloneWindows64 : BuildTarget.StandaloneWindows,
                 options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None,
@@ -98,7 +98,7 @@ namespace AlethEditor.Build
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                // scenes = LevelManager.FullPathLevelList.ToArray(),
+                scenes = GetScenes(),
                 locationPathName = path,
                 target = BuildTarget.StandaloneLinux64,
                 options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None
