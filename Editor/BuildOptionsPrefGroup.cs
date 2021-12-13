@@ -64,9 +64,11 @@ namespace AlethEditor.Prefs
             set { BuildOptionsColumnWidth = value; }
         }
 
-        public override void DrawGroup()
+        public override bool IgnoreContextMenu(Vector2 parentScroll) { return true; }
+
+        public override Rect DrawGroup()
         {
-            base.DrawGroup();
+            Rect rect = GUILayoutUtility.GetLastRect();
         
             ABuildPrefs.BuildGroup = (BuildGroups)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildGroup, "Targets");
             ABuildPrefs.BuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildArch, "Architecture");
@@ -98,6 +100,9 @@ namespace AlethEditor.Prefs
                 ABuildManager.RunBuild(ABuildPrefs.RunDeepProfile);
                 GUIUtility.ExitGUI();
             }
+
+            rect.height = (GUILayoutUtility.GetLastRect().y - rect.y) + GUILayoutUtility.GetLastRect().height;
+            return rect;
         }        
         #endregion
 

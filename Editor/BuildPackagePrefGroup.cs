@@ -36,12 +36,15 @@ namespace AlethEditor.Prefs
             set { BuildPackageColumnWidth = value; }
         }
 
-        public override void DrawGroup()
+        public override Rect DrawGroup()
         {
-            base.DrawGroup();
+            Rect rect = GUILayoutUtility.GetLastRect();
 
             ABuildPrefs.ABuildPackageDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildPackageDebugLevels, "Package Debug Level");
-        }
+
+            rect.height = (GUILayoutUtility.GetLastRect().y - rect.y) + GUILayoutUtility.GetLastRect().height;
+            return rect;
+        }        
         #endregion
     }
 }
