@@ -199,9 +199,12 @@ namespace AlethEditor.Build
 
             foreach (string path in ABuildPrefs.BuildSceneFolders)
             {
+                if (string.IsNullOrWhiteSpace(path))
+                    continue; 
+
                 foreach (string s in Directory.GetFiles(path, "*.unity", isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
                 {
-                    retList.Add(s);
+                    retList.Add(s.Replace(Application.dataPath, "Assets"));
                 }
             }
 
