@@ -47,7 +47,7 @@ namespace AlethEditor.Build
                                         bool debug = false)
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Windows));
+            string path = Path.GetFullPath(GetBuildPath(BuildGroups.Windows));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -94,7 +94,7 @@ namespace AlethEditor.Build
             //     PlayerPrefsManager.SetForceDebugLogging(false);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Linux));
+            string path = Path.GetFullPath(GetBuildPath(BuildGroups.Linux));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -142,7 +142,7 @@ namespace AlethEditor.Build
             //     PlayerPrefsManager.SetForceDebugLogging(false);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
-            string path = System.IO.Path.GetFullPath(GetBuildPath(BuildGroups.Mac));
+            string path = Path.GetFullPath(GetBuildPath(BuildGroups.Mac));
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {

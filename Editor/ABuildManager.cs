@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-
 
 namespace AlethEditor.Build
 {
@@ -21,8 +19,15 @@ namespace AlethEditor.Build
 
     public static class ABuildManager
     {
+        public static event EventHandler OnBeforeBuild;
+        public static event EventHandler OnAfterBuild;
+        public static event EventHandler OnBeforeRunBuild;
+        public static event EventHandler OnAfterRunBuild;
+
         public static void BuildAll(BuildGroups groups, BuildArchs arch, bool isDebug)
         {
+            OnBeforeBuild?.Invoke(null, null);
+
             if (groups.HasFlag(BuildGroups.Windows))
                 ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug);
 
@@ -31,6 +36,8 @@ namespace AlethEditor.Build
 
             if (groups.HasFlag(BuildGroups.Mac))
                 ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug);
+
+            OnAfterBuild?.Invoke(null, null);
         }
 
         public static void RunBuild(bool deepProfile = true)
@@ -43,6 +50,8 @@ namespace AlethEditor.Build
 
         public static void RunBuild(BuildGroups platform, bool deepProfile = true)
         {
+            OnBeforeRunBuild?.Invoke(null, null);
+
             var p = new System.Diagnostics.Process();
             p.StartInfo.FileName = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform)));
 
@@ -50,6 +59,8 @@ namespace AlethEditor.Build
                 p.StartInfo.Arguments = "-deepprofiling";
 
             p.Start();
+
+            OnAfterRunBuild?.Invoke(null, null);
         }
     }
 }
