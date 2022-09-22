@@ -62,8 +62,8 @@ namespace AlethEditor.Build
 
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.Log("Successfully built {Application.productName} for Win64. Opening folder now.");
-                System.Diagnostics.Process.Start(path.Replace(@"\{Application.productName}.exe", ""));
+                Debug.Log($"Successfully built {Application.productName} for Win64. Opening folder now.");
+                System.Diagnostics.Process.Start(path.Replace(@"\" + $"{Application.productName}.exe", ""));
             }
             else
                 Debug.LogError("Build failed:\n" + result.summary);
@@ -109,7 +109,7 @@ namespace AlethEditor.Build
 
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                string folderPath = path.Replace(@"/{Application.productName}." + (x64 ? "x86_64" : "x86"), "");
+                string folderPath = path.Replace(@"\" + $"{Application.productName}." + (x64 ? "x86_64" : "x86"), "");
                 Debug.Log($"Successfully built {Application.productName} for Linux. Opening folder now ({folderPath}).");
                 System.Diagnostics.Process.Start(folderPath);                
             }
@@ -157,7 +157,7 @@ namespace AlethEditor.Build
             Debug.Log($"Building {Application.productName} for Mac to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
             if (result.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
             {
-                Debug.Log("Successfully built {Application.productName} for Mac (debug).");
+                Debug.Log($"Successfully built {Application.productName} for Mac (debug).");
                 System.Diagnostics.Process.Start(path);
 
                 if (runBuild)
