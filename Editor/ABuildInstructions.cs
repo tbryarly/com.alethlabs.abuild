@@ -54,7 +54,12 @@ namespace AlethEditor.Build
                 scenes = GetScenes(),
                 locationPathName = path,
                 target = x64 ? BuildTarget.StandaloneWindows64 : BuildTarget.StandaloneWindows,
-                options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None,
+                options = debug ?
+                                  (BuildOptions.Development |
+                                   BuildOptions.AllowDebugging |
+                                   BuildOptions.ConnectWithProfiler |
+                                   BuildOptions.EnableDeepProfilingSupport)
+                                : BuildOptions.None,
             };
 
             Debug.Log($"Building {Application.productName} for Windows to {path}.\nx64: {x64}\nDebug: {debug}");
@@ -101,7 +106,12 @@ namespace AlethEditor.Build
                 scenes = GetScenes(),
                 locationPathName = path,
                 target = BuildTarget.StandaloneLinux64,
-                options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None
+                options = debug ?
+                                  (BuildOptions.Development |
+                                   BuildOptions.AllowDebugging |
+                                   BuildOptions.ConnectWithProfiler |
+                                   BuildOptions.EnableDeepProfilingSupport)
+                                : BuildOptions.None,
             };
 
             Debug.Log($"Building {Application.productName} for Linux to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
@@ -149,7 +159,12 @@ namespace AlethEditor.Build
                 scenes = GetScenes(),
                 locationPathName = path,
                 target = BuildTarget.StandaloneOSX,
-                options = debug ? (BuildOptions.Development | BuildOptions.AllowDebugging | BuildOptions.ConnectWithProfiler) : BuildOptions.None
+                options = debug ?
+                                  (BuildOptions.Development |
+                                   BuildOptions.AllowDebugging |
+                                   BuildOptions.ConnectWithProfiler |
+                                   BuildOptions.EnableDeepProfilingSupport)
+                                : BuildOptions.None,
             };
 
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
