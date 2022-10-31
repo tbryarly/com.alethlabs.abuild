@@ -71,7 +71,12 @@ namespace AlethEditor.Build
                 System.Diagnostics.Process.Start(path.Replace(@"\" + $"{Application.productName}.exe", ""));
             }
             else
+            {
                 Debug.LogError("Build failed:\n" + result.summary);
+                EditorUtility.DisplayDialog("Build Failed",
+                                            "Build was not sucessful. See console for details.",
+                                            "Ok");
+            }
         }
 
         /// <summary>
@@ -124,7 +129,12 @@ namespace AlethEditor.Build
                 System.Diagnostics.Process.Start(folderPath);                
             }
             else
+            {
                 Debug.LogError("Build failed:\n" + result.summary);
+                EditorUtility.DisplayDialog("Build Failed",
+                                            "Build was not sucessful. See console for details.",
+                                            "Ok");
+            }
         }
 
         /// <summary>
@@ -179,7 +189,12 @@ namespace AlethEditor.Build
                     Debug.LogWarning("Run on build not implemented for Mac.");
             }
             else
+            {
                 Debug.LogError("Build failed:\n" + result.summary);
+                EditorUtility.DisplayDialog("Build Failed",
+                                            "Build was not sucessful. See console for details.",
+                                            "Ok");
+            }
         }
 
         public static string[] GetScenes()

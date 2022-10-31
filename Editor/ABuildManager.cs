@@ -53,10 +53,24 @@ namespace AlethEditor.Build
             OnBeforeRunBuild?.Invoke(null, null);
 
             var p = new System.Diagnostics.Process();
-            p.StartInfo.FileName = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform)));
+            string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform))); 
+            p.StartInfo.FileName = path;
 
             if (deepProfile)
                 p.StartInfo.Arguments = "-deepprofiling";
+
+            DateTime writeTime = System.IO.File.GetLastWriteTime(path);
+            TimeSpan delta = DateTime.Now - writeTime;
+            if (delta.Days > 1)
+            {
+                if (!UnityEditor.EditorUtility.DisplayDialog("Old Build Detected",
+                                                             $"Last build was {delta.Days} days ago.\nProceed?",
+                                                             "Yes", 
+                                                             "No"))
+                {
+                    return;
+                }
+            }
 
             p.Start();
 

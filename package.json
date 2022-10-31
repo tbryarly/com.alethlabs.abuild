@@ -1,6 +1,6 @@
  {
   "name": "com.alethlabs.abuild",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "displayName": "Aleth Labs Build Utilities",
   "description": "Options and interface for builds.",
   "unity": "2019.1",
