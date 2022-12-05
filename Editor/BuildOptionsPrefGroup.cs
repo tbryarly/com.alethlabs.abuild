@@ -89,15 +89,17 @@ namespace AlethEditor.Prefs
             
             if (GUILayout.Button("Build Selected"))
             {
-                ABuildManager.BuildAll(ABuildPrefs.BuildGroup, ABuildPrefs.BuildArch, ABuildPrefs.IsDebugBuild);
+                ABuildManager.BuildAll(ABuildPrefs.BuildGroup, 
+                                       ABuildPrefs.BuildArch, 
+                                       ABuildPrefs.IsDebugBuild, 
+                                       ABuildPrefs.RunDeepProfile);
                 GUIUtility.ExitGUI();
             }
 
-            EditorGUILayout.Space();
-            ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile On Run");
+            EditorGUILayout.Space();            
             if (GUILayout.Button("Run Last Build"))
             {
-                ABuildManager.RunBuild(ABuildPrefs.RunDeepProfile);
+                ABuildManager.RunBuild();
                 GUIUtility.ExitGUI();
             }
 
@@ -128,22 +130,23 @@ namespace AlethEditor.Prefs
 
         private void DrawDebugOptions()
         {
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.Space();
-            EditorGUILayout.BeginVertical();
+            //EditorGUILayout.BeginHorizontal();
+            //EditorGUILayout.Space();
+            //EditorGUILayout.BeginVertical();
 
             ABuildPrefs.ABuildDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildDebugLevels, "Build Debug Level");
 
-            EditorGUILayout.LabelField("Set Debug State", EditorStyles.boldLabel);
-            ABuildPrefs.DebugUpdateContext = (ProjectScopes)EditorPrefAttribute.DrawPref(ABuildPrefs.DebugUpdateContext, "Scope to Update");
-            if (GUILayout.Button("Apply debug state"))
-            {
-                Debug.Log("Apply to scope TBI!");
-            }
+            ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile");
+            //EditorGUILayout.LabelField("Set Debug State", EditorStyles.boldLabel);
+            //ABuildPrefs.DebugUpdateContext = (ProjectScopes)EditorPrefAttribute.DrawPref(ABuildPrefs.DebugUpdateContext, "Scope to Update");
+            //if (GUILayout.Button("Apply debug state"))
+            //{
+            //    Debug.Log("Apply to scope TBI!");
+            //}
 
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space();
-            EditorGUILayout.EndHorizontal();
+            //EditorGUILayout.EndVertical();
+            //EditorGUILayout.Space();
+            //EditorGUILayout.EndHorizontal();
         }
 
         private void DrawSceneLocations()

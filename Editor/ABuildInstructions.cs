@@ -44,7 +44,8 @@ namespace AlethEditor.Build
         /// Will open folder containing build when complete.
         /// </summary>
         public static void WindowsBuild(bool x64 = true,
-                                        bool debug = false)
+                                        bool debug = false,
+                                        bool deepProfile = false)
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
             string path = Path.GetFullPath(GetBuildPath(BuildGroups.Windows));
@@ -57,10 +58,14 @@ namespace AlethEditor.Build
                 options = debug ?
                                   (BuildOptions.Development |
                                    BuildOptions.AllowDebugging |
-                                   BuildOptions.ConnectWithProfiler |
-                                   BuildOptions.EnableDeepProfilingSupport)
+                                   BuildOptions.ConnectWithProfiler)
                                 : BuildOptions.None,
             };
+
+            if (deepProfile)
+            {
+                buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
+            }
 
             Debug.Log($"Building {Application.productName} for Windows to {path}.\nx64: {x64}\nDebug: {debug}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -85,6 +90,7 @@ namespace AlethEditor.Build
         /// </summary>
         public static void LinuxBuild(bool x64 = true,
                                       bool debug = false,
+                                      bool deepProfile = false,
                                       bool ForceDebugLogging = false,
                                       bool runBuild = false,
                                       bool nukeSettings = true)
@@ -114,10 +120,14 @@ namespace AlethEditor.Build
                 options = debug ?
                                   (BuildOptions.Development |
                                    BuildOptions.AllowDebugging |
-                                   BuildOptions.ConnectWithProfiler |
-                                   BuildOptions.EnableDeepProfilingSupport)
+                                   BuildOptions.ConnectWithProfiler)
                                 : BuildOptions.None,
             };
+
+            if (deepProfile)
+            {
+                buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
+            }
 
             Debug.Log($"Building {Application.productName} for Linux to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -143,6 +153,7 @@ namespace AlethEditor.Build
         /// </summary>
         public static void MacBuild(bool x64 = true,
                                     bool debug = false,
+                                    bool deepProfile = false,
                                     bool ForceDebugLogging = false,
                                     bool runBuild = false,
                                     bool nukeSettings = true)
@@ -172,10 +183,14 @@ namespace AlethEditor.Build
                 options = debug ?
                                   (BuildOptions.Development |
                                    BuildOptions.AllowDebugging |
-                                   BuildOptions.ConnectWithProfiler |
-                                   BuildOptions.EnableDeepProfilingSupport)
+                                   BuildOptions.ConnectWithProfiler)
                                 : BuildOptions.None,
             };
+
+            if (deepProfile)
+            {
+                buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
+            }
 
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 

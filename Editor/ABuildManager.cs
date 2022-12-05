@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace AlethEditor.Build
@@ -24,42 +25,42 @@ namespace AlethEditor.Build
         public static event EventHandler OnBeforeRunBuild;
         public static event EventHandler OnAfterRunBuild;
 
-        public static void BuildAll(BuildGroups groups, BuildArchs arch, bool isDebug)
+        public static void BuildAll(BuildGroups groups, BuildArchs arch, bool isDebug, bool deepProfile)
         {
             OnBeforeBuild?.Invoke(null, null);
 
             if (groups.HasFlag(BuildGroups.Windows))
-                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug);
+                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
 
             if (groups.HasFlag(BuildGroups.Linux))
-                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug);
+                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
 
             if (groups.HasFlag(BuildGroups.Mac))
-                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug);
+                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
 
             OnAfterBuild?.Invoke(null, null);
         }
 
-        public static void RunBuild(bool deepProfile = true)
+        public static void RunBuild()
         {
             if (Application.platform == RuntimePlatform.WindowsEditor)
-                RunBuild(BuildGroups.Windows, deepProfile: deepProfile);
+                RunBuild(BuildGroups.Windows);
             else if (Application.platform == RuntimePlatform.LinuxEditor)
-                RunBuild(BuildGroups.Linux, deepProfile: deepProfile);
+                RunBuild(BuildGroups.Linux);
         }
 
-        public static void RunBuild(BuildGroups platform, bool deepProfile = true)
+        public static void RunBuild(BuildGroups platform)
         {
             OnBeforeRunBuild?.Invoke(null, null);
 
             var p = new System.Diagnostics.Process();
-            string path = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform))); 
+            string path = Path.GetFullPath(Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform))); 
             p.StartInfo.FileName = path;
 
-            if (deepProfile)
-                p.StartInfo.Arguments = "-deepprofiling";
+            //if (deepProfile)
+            //    p.StartInfo.Arguments = "-deepprofiling";
 
-            DateTime writeTime = System.IO.File.GetLastWriteTime(path);
+            DateTime writeTime = GetLastModifyTime(path);            
             TimeSpan delta = DateTime.Now - writeTime;
             if (delta.Days > 1)
             {
@@ -75,6 +76,33 @@ namespace AlethEditor.Build
             p.Start();
 
             OnAfterRunBuild?.Invoke(null, null);
+        }
+
+        private static DateTime GetLastModifyTime(string path)
+        {
+            string dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+            {
+                Debug.LogError($"{path} does not exist.");
+                return default;
+            }
+
+            DateTime lastMod = default;
+            foreach (string s in Directory.GetFileSystemEntries(dir))
+            {
+                DateTime thisMod = default;
+                if (Directory.Exists(s))
+                {
+                    thisMod = Directory.GetLastWriteTime(s);
+                }
+                else if (File.Exists(s))
+                {
+                    thisMod = File.GetLastWriteTime(s);
+                }
+                
+                if (lastMod == default || thisMod > lastMod) lastMod = thisMod;                
+            }
+            return lastMod;
         }
     }
 }
