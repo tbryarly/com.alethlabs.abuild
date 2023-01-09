@@ -80,7 +80,7 @@ namespace AlethEditor.Build
             TimeSpan delta = DateTime.Now - writeTime;
             if (delta.Days > 1) return $"{delta.Days} days";
             if (delta.Hours > 1) return $"{delta.Hours} hours";
-            return $"{delta.Minutes}:{delta.Seconds}";
+            return $"{delta.Minutes} minutes";
         }
 
         public static TimeSpan GetLastModifyDelta(string path)
