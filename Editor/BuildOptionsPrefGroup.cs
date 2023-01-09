@@ -96,12 +96,20 @@ namespace AlethEditor.Prefs
                 GUIUtility.ExitGUI();
             }
 
-            EditorGUILayout.Space();            
-            if (GUILayout.Button("Run Last Build"))
+            EditorGUILayout.Space();
+
+            int buildAge = GetPathAge();
+            bool oldGUI = GUI.enabled;
+            if (buildAge == int.MaxValue)
+                GUI.enabled = false;
+
+            if (GUILayout.Button(buildAge == int.MaxValue ? "No valid build" : $"Run Last Build ({buildAge} days old)"))
             {
                 ABuildManager.RunBuild();
                 GUIUtility.ExitGUI();
             }
+
+            GUI.enabled = oldGUI;
 
             rect.height = (GUILayoutUtility.GetLastRect().y - rect.y) + GUILayoutUtility.GetLastRect().height;
             return rect;
@@ -200,6 +208,17 @@ namespace AlethEditor.Prefs
                 EditorGUILayout.TextField("Linux Path", ABuildInstructions.GetBuildPath(BuildGroups.Linux));
             if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Mac))
                 EditorGUILayout.TextField("Mac Path", ABuildInstructions.GetBuildPath(BuildGroups.Mac));            
+        }
+
+        private int GetPathAge()
+        {
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Windows))
+                return ABuildManager.GetLastModifyDelta(ABuildInstructions.GetBuildPath(BuildGroups.Windows)).Days;
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Linux))
+                return ABuildManager.GetLastModifyDelta(ABuildInstructions.GetBuildPath(BuildGroups.Linux)).Days;
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Mac))
+                return ABuildManager.GetLastModifyDelta(ABuildInstructions.GetBuildPath(BuildGroups.Mac)).Days;
+            return int.MaxValue;
         }
         #endregion
 

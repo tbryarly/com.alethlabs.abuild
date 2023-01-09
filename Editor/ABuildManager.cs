@@ -57,11 +57,7 @@ namespace AlethEditor.Build
             string path = Path.GetFullPath(Path.Combine(Application.dataPath, ABuildInstructions.GetBuildPath(platform))); 
             p.StartInfo.FileName = path;
 
-            //if (deepProfile)
-            //    p.StartInfo.Arguments = "-deepprofiling";
-
-            DateTime writeTime = GetLastModifyTime(path);            
-            TimeSpan delta = DateTime.Now - writeTime;
+            TimeSpan delta = GetLastModifyDelta(path);
             if (delta.Days > 1)
             {
                 if (!UnityEditor.EditorUtility.DisplayDialog("Old Build Detected",
@@ -76,6 +72,12 @@ namespace AlethEditor.Build
             p.Start();
 
             OnAfterRunBuild?.Invoke(null, null);
+        }
+
+        public static TimeSpan GetLastModifyDelta(string path)
+        {
+            DateTime writeTime = GetLastModifyTime(path);
+            return DateTime.Now - writeTime;
         }
 
         private static DateTime GetLastModifyTime(string path)
