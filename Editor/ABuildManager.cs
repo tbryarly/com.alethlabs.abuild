@@ -74,6 +74,15 @@ namespace AlethEditor.Build
             OnAfterRunBuild?.Invoke(null, null);
         }
 
+        public static string GetLastModifiedString(string path)
+        {
+            DateTime writeTime = GetLastModifyTime(path);
+            TimeSpan delta = DateTime.Now - writeTime;
+            if (delta.Days > 1) return $"{delta.Days} days";
+            if (delta.Hours > 1) return $"{delta.Hours} hours";
+            return $"{delta.Minutes}:{delta.Seconds}";
+        }
+
         public static TimeSpan GetLastModifyDelta(string path)
         {
             DateTime writeTime = GetLastModifyTime(path);

@@ -103,7 +103,7 @@ namespace AlethEditor.Prefs
             if (buildAge == int.MaxValue)
                 GUI.enabled = false;
 
-            if (GUILayout.Button(buildAge == int.MaxValue ? "No valid build" : $"Run Last Build ({buildAge} days old)"))
+            if (GUILayout.Button(buildAge == int.MaxValue ? "No valid build" : $"Run Last Build ({GetPathAgeString()} old)"))
             {
                 ABuildManager.RunBuild();
                 GUIUtility.ExitGUI();
@@ -219,6 +219,17 @@ namespace AlethEditor.Prefs
             if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Mac))
                 return ABuildManager.GetLastModifyDelta(ABuildInstructions.GetBuildPath(BuildGroups.Mac)).Days;
             return int.MaxValue;
+        }
+
+        private string GetPathAgeString()
+        {
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Windows))
+                return ABuildManager.GetLastModifiedString(ABuildInstructions.GetBuildPath(BuildGroups.Windows));
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Linux))
+                return ABuildManager.GetLastModifiedString(ABuildInstructions.GetBuildPath(BuildGroups.Linux));
+            if (ABuildPrefs.BuildGroup.HasFlag(BuildGroups.Mac))
+                return ABuildManager.GetLastModifiedString(ABuildInstructions.GetBuildPath(BuildGroups.Mac));
+            return "";
         }
         #endregion
 
