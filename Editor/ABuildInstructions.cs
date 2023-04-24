@@ -303,7 +303,12 @@ namespace AlethEditor.Build
 
             string[] sources = isDemo ? ABuildPrefs.SelectedDemoScenesForBuild : ABuildPrefs.SelectedScenesForBuild;
             foreach (string source in sources)
-                retList.Add(source.Replace(Application.dataPath, "Assets"));
+            {
+                string path = source.Replace(Application.dataPath, "");
+                if (string.IsNullOrWhiteSpace(path))
+                    continue;
+                retList.Add(path);
+            }
 
             return retList.ToArray();
         }
