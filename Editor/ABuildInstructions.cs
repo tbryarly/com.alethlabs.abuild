@@ -231,7 +231,21 @@ namespace AlethEditor.Build
             
             if (locations.HasFlag(IncludeSceneLocations.LocalFolders) ||
                 locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
-                return FinalLocalScenes(locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive));
+            {
+                if (locations.HasFlag(IncludeSceneLocations.IsDemo))
+                {
+                    return FinalLocalScenes(
+                          locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive),
+                          ABuildPrefs.DemoBuildSceneFolders);
+                }
+                else
+                {
+                    return FinalLocalScenes(
+                        locations.HasFlag(
+                            IncludeSceneLocations.LocalFoldersRecursive),
+                            ABuildPrefs.BuildSceneFolders);
+                }
+            }                
             
             if (locations.HasFlag(IncludeSceneLocations.UseBuildSettings))
                 return GetBuildSettingScenes();
@@ -253,11 +267,11 @@ namespace AlethEditor.Build
             return retList.ToArray();
         }
 
-        private static string[] FinalLocalScenes(bool isRecursive)
+        private static string[] FinalLocalScenes(bool isRecursive, string[] source)
         {
             List<string> retList = new List<string>();
 
-            foreach (string path in ABuildPrefs.BuildSceneFolders)
+            foreach (string path in source)
             {
                 if (string.IsNullOrWhiteSpace(path))
                     continue; 
@@ -285,9 +299,13 @@ namespace AlethEditor.Build
 
         private static string[] GetSelectSceneSettings(bool isDemo)
         {
-            if (isDemo)
-                return ABuildPrefs.SelectedDemoScenesForBuild;
-            return ABuildPrefs.SelectedScenesForBuild;
+            List<string> retList = new List<string>();
+
+            string[] sources = isDemo ? ABuildPrefs.SelectedDemoScenesForBuild : ABuildPrefs.SelectedScenesForBuild;
+            foreach (string source in sources)
+                retList.Add(source.Replace(Application.dataPath, "Assets"));
+
+            return retList.ToArray();
         }
     }
 }

@@ -417,10 +417,7 @@ namespace AlethEditor.Prefs
             {
                 if (obj is SceneAsset scene)
                 {
-                    string path = Path.Join(
-                        Application.dataPath,
-                        AssetDatabase.GetAssetPath(scene));
-
+                    string path = AssetDatabase.GetAssetPath(scene);
                     retList.Insert(index + count, path);
                     count++;
                 }
