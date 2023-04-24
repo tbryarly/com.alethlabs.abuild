@@ -305,7 +305,7 @@ namespace AlethEditor.Build
             foreach (string source in sources)
             {
                 string path = source.Replace(Application.dataPath + @"\", "");
-                path = source.Replace(Application.dataPath, "");
+                path = path.Replace(Application.dataPath, "");
 
                 if (string.IsNullOrWhiteSpace(path))
                     continue;
