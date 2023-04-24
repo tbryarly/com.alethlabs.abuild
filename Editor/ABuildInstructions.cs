@@ -17,6 +17,16 @@ namespace AlethEditor.Build
     /// </summary>
     public class ABuildInstructions : MonoBehaviour
     {
+        private static IncludeSceneLocations sceneLocations 
+        { 
+            get 
+            {
+                return ABuildPrefs.ShowDemoBuild ?
+                    ABuildPrefs.DemoBuildSceneLocations :
+                    ABuildPrefs.BuildSceneLocations;
+            } 
+        }
+
         public static string GetBuildPath(BuildGroups buildGroup)
         {
             // REVIEW: if multiple, fail!
@@ -26,6 +36,8 @@ namespace AlethEditor.Build
             retString += $"/{buildGroup}/";
 
             retString += ((int)ABuildPrefs.BuildArch == 2) ? "x86_64/" : "x86/";
+
+            retString += ABuildPrefs.ShowDemoBuild ? "Demo/" : "";
 
             retString += ABuildPrefs.IsDebugBuild ? "Debug/" : "Production/";
 
@@ -52,7 +64,7 @@ namespace AlethEditor.Build
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = GetScenes(),
+                scenes = GetScenes(sceneLocations),
                 locationPathName = path,
                 target = x64 ? BuildTarget.StandaloneWindows64 : BuildTarget.StandaloneWindows,
                 options = debug ?
@@ -114,7 +126,7 @@ namespace AlethEditor.Build
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = GetScenes(),
+                scenes = GetScenes(sceneLocations),
                 locationPathName = path,
                 target = BuildTarget.StandaloneLinux64,
                 options = debug ?
@@ -177,7 +189,7 @@ namespace AlethEditor.Build
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
-                scenes = GetScenes(),
+                scenes = GetScenes(sceneLocations),
                 locationPathName = path,
                 target = BuildTarget.StandaloneOSX,
                 options = debug ?
@@ -212,17 +224,20 @@ namespace AlethEditor.Build
             }
         }
 
-        public static string[] GetScenes()
+        public static string[] GetScenes(IncludeSceneLocations locations)
         {           
-            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.AllScenes))
+            if (locations.HasFlag(IncludeSceneLocations.AllScenes))
                 return FindAllScenes();
             
-            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFolders) ||
-                ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
-                return FinalLocalScenes(ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive));
+            if (locations.HasFlag(IncludeSceneLocations.LocalFolders) ||
+                locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
+                return FinalLocalScenes(locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive));
             
-            if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.UseBuildSettings))
-                return GetBuildSettingScenes();          
+            if (locations.HasFlag(IncludeSceneLocations.UseBuildSettings))
+                return GetBuildSettingScenes();
+
+            if (locations.HasFlag(IncludeSceneLocations.SelectScenes))
+                return GetSelectSceneSettings(locations.HasFlag(IncludeSceneLocations.IsDemo));
 
             return null;
         }
@@ -266,6 +281,13 @@ namespace AlethEditor.Build
             }
 
             return retList.ToArray();
+        }
+
+        private static string[] GetSelectSceneSettings(bool isDemo)
+        {
+            if (isDemo)
+                return ABuildPrefs.SelectedDemoScenesForBuild;
+            return ABuildPrefs.SelectedScenesForBuild;
         }
     }
 }

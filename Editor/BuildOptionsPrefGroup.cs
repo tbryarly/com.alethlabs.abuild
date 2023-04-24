@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +13,8 @@ namespace AlethEditor.Prefs
 {
     public class BuildOptionsPrefGroup : APrefGroup
     {
+        public const string DEBUG_BUILD_KEY = "DEBUG_BUILD";
+
         private ReorderableList _sceneFolderList;
         protected ReorderableList SceneFolderList
         { 
@@ -37,8 +39,32 @@ namespace AlethEditor.Prefs
             }
         }
 
+        private ReorderableList _scenePathList;
+        protected ReorderableList ScenePathList
+        {
+            get
+            {
+                if (_scenePathList == null)
+                {
+                    _scenePathList = new ReorderableList(ABuildPrefs.SelectedScenesForBuild,
+                                                          typeof(string),
+                                                          true,
+                                                          false,
+                                                          true,
+                                                          true);
+                    _scenePathList.elementHeight = AlethEditorUtils.SLine;
+                    _scenePathList.drawHeaderCallback = DrawScenePathHeader;
+                    _scenePathList.drawElementCallback = DrawScenePathElement;
+                    _scenePathList.onAddCallback = AddScenePathElement;
+                    _scenePathList.onRemoveCallback = RemoveScenePathElement;
+                    _scenePathList.onReorderCallbackWithDetails = ReorderScenePathList;
+                }
+                return _scenePathList;
+            }
+        }
+
         #region APrefGroup
-        public override string HeaderName { get { return "Options"; } }
+        public override string HeaderName { get { return "Build Options"; } }
 
         [EditorPref("BuildOptionsColumnNum", 0f, Mathf.Infinity)]
         private static int BuildOptionsColumnNum = 0;
@@ -74,7 +100,11 @@ namespace AlethEditor.Prefs
             ABuildPrefs.BuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildArch, "Architecture");
             DrawOutputPath();
 
-            ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.IsDebugBuild, "Debug Build");
+            //ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.IsDebugBuild, "Debug Build");
+            ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawBoolWithDefineSymbol(
+                ABuildPrefs.IsDebugBuild, 
+                "Debug Build", 
+                DEBUG_BUILD_KEY);
 
             if (ABuildPrefs.IsDebugBuild)
             {
@@ -100,10 +130,11 @@ namespace AlethEditor.Prefs
 
             int buildAge = GetPathAge();
             bool oldGUI = GUI.enabled;
-            if (buildAge == int.MaxValue)
+            bool validBuild = buildAge < 36500; // 100 years
+            if (validBuild == false)
                 GUI.enabled = false;
 
-            if (GUILayout.Button(buildAge == int.MaxValue ? "No valid build" : $"Run Last Build ({GetPathAgeString()} old)"))
+            if (GUILayout.Button(validBuild == false ? "No valid build" : $"Run Last Build ({GetPathAgeString()} old)"))
             {
                 ABuildManager.RunBuild();
                 GUIUtility.ExitGUI();
@@ -138,61 +169,62 @@ namespace AlethEditor.Prefs
 
         private void DrawDebugOptions()
         {
-            //EditorGUILayout.BeginHorizontal();
-            //EditorGUILayout.Space();
-            //EditorGUILayout.BeginVertical();
-
             ABuildPrefs.ABuildDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildDebugLevels, "Build Debug Level");
 
             ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile");
-            //EditorGUILayout.LabelField("Set Debug State", EditorStyles.boldLabel);
-            //ABuildPrefs.DebugUpdateContext = (ProjectScopes)EditorPrefAttribute.DrawPref(ABuildPrefs.DebugUpdateContext, "Scope to Update");
-            //if (GUILayout.Button("Apply debug state"))
-            //{
-            //    Debug.Log("Apply to scope TBI!");
-            //}
-
-            //EditorGUILayout.EndVertical();
-            //EditorGUILayout.Space();
-            //EditorGUILayout.EndHorizontal();
         }
 
         private void DrawSceneLocations()
         {
             EditorGUILayout.LabelField("Scene Locations");
-            IncludeSceneLocations locationCheck = (IncludeSceneLocations)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildSceneLocations, "Get Scenes From");
-            if (ABuildPrefs.BuildSceneLocations != locationCheck)
+            IncludeSceneLocations locationCheck = (IncludeSceneLocations)EditorPrefAttribute.DrawPref(
+                ABuildPrefs._buildSceneLocations, 
+                "Get Scenes From");
+
+            if (ABuildPrefs._buildSceneLocations != locationCheck)
             {
-                ABuildPrefs.BuildSceneLocations = locationCheck;
+                ABuildPrefs._buildSceneLocations = locationCheck;
                 ResetSceneCount();
             }
+
+            bool selectScenes = ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.SelectScenes);
 
             if (ABuildPrefs.BuildSceneFolders == null)
                 ABuildPrefs.BuildSceneFolders = new string[] { };
             if (ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFolders) ||
                 ABuildPrefs.BuildSceneLocations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
                 SceneFolderList.DoLayoutList();
+            else if (selectScenes)
+                ScenePathList.DoLayoutList();
 
-            string[] scenes = ABuildInstructions.GetScenes();
-            sceneListFold = EditorGUILayout.BeginFoldoutHeaderGroup(sceneListFold, $"Found {SceneCount} scenes to build.");
-            if (sceneListFold && scenes != null)
+            if (!selectScenes)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Space();
-                EditorGUILayout.BeginVertical();
-                foreach (string scene in scenes)
-                    EditorGUILayout.LabelField(scene);
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space();
-                EditorGUILayout.EndHorizontal();
+                string[] scenes = ABuildInstructions.GetScenes(ABuildPrefs.BuildSceneLocations);
+                sceneListFold = EditorGUILayout.BeginFoldoutHeaderGroup(
+                    sceneListFold,
+                    $"Found {SceneCount} scenes to build.");
+
+                if (sceneListFold && scenes != null)
+                {
+                    foreach (string scene in scenes)
+                        EditorGUILayout.LabelField($"        {scene}");
+                }
+                EditorGUILayout.EndFoldoutHeaderGroup();
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
-            // EditorGUILayout.LabelField($"Found {SceneCount} scenes to build.");
         }
 
         private bool sceneListFold = false;
         private int _sceneCount = -1;
-        private int SceneCount { get { if (_sceneCount == -1) _sceneCount = ABuildInstructions.GetScenes()?.Length ?? 0; return _sceneCount; } }
+        private int SceneCount 
+        { 
+            get 
+            { 
+                if (_sceneCount == -1) 
+                    _sceneCount = ABuildInstructions.GetScenes(ABuildPrefs.BuildSceneLocations)?.Length ?? 0; 
+                return _sceneCount; 
+            } 
+        }
+
         private void ResetSceneCount() { _sceneCount = -1; }
 
         private void DrawPaths()
@@ -276,10 +308,128 @@ namespace AlethEditor.Prefs
             ResetSceneCount();
         }
 
-
         private void ReorderLocationList(ReorderableList list, int oldIndex, int newIndex)
         {
             ABuildPrefs.BuildSceneFolders = (string[])list.list;
+        }
+        #endregion
+
+        #region ReordList ScenePath Callbacks
+        private void DrawScenePathHeader(Rect rect)
+        {
+            EditorGUI.LabelField(rect, "Scene Paths");
+        }
+
+        private void DrawScenePathElement(Rect rect, int i, bool isActive, bool isFocused)
+        {
+            CheckDrag(rect, i);
+
+            Event e = Event.current;
+            if (e.type == EventType.MouseDown &&
+                e.button == 0 &&
+                rect.Contains(e.mousePosition))
+            {
+                string path = EditorUtility.OpenFilePanel(
+                    "Scene Path Location",
+                    ABuildPrefs.SelectedScenesForBuild[i],
+                    "unity");
+
+                if (!string.IsNullOrWhiteSpace(path) &&
+                    ABuildPrefs.SelectedScenesForBuild[i] != path)
+                {
+                    ABuildPrefs.SelectedScenesForBuild[i] = path;
+                    ResetSceneCount();
+                }
+                GUIUtility.ExitGUI();
+                e.Use();
+            }
+
+            EditorGUI.TextField(rect, ABuildPrefs.SelectedScenesForBuild[i]);
+        }
+
+        private void AddScenePathElement(ReorderableList list)
+        {
+            ABuildPrefs.SelectedScenesForBuild = ABuildPrefs.SelectedScenesForBuild.Append("").ToArray();
+            _scenePathList = null; // Rebuild list
+            ResetSceneCount();
+        }
+
+        private void RemoveScenePathElement(ReorderableList list)
+        {
+            List<string> sList = ABuildPrefs.SelectedScenesForBuild.ToList();
+            sList.RemoveAt(list.index);
+            ABuildPrefs.SelectedScenesForBuild = sList.ToArray();
+            _scenePathList = null; // Rebuild list
+            ResetSceneCount();
+        }
+
+        private void ReorderScenePathList(ReorderableList list, int oldIndex, int newIndex)
+        {
+            ABuildPrefs.SelectedScenesForBuild = (string[])list.list;
+        }
+
+        private void CheckDrag(Rect rect, int index)
+        {
+            if (rect.Contains(Event.current.mousePosition))
+            {
+                switch (Event.current.type)
+                {
+                    case EventType.DragUpdated:
+
+                        if (DragIsScene)
+                        {
+                            DragAndDrop.visualMode = DragAndDropVisualMode.Link;
+                            Event.current.Use();
+                        }
+                        break;
+                    case EventType.DragPerform:
+                        if (DragIsScene)
+                        {
+                            DragAndDrop.AcceptDrag();
+
+                            AddSceneAt(DragAndDrop.objectReferences, index);
+                            Event.current.Use();
+                        }
+                        break;
+                }
+            }
+        }
+
+        bool DragIsScene
+        {
+            get
+            {
+                foreach (Object obj in DragAndDrop.objectReferences)
+                {
+                    if (!(obj is SceneAsset))
+                        return false;
+                }
+                return true;
+            }
+        }
+
+        private void AddSceneAt(Object[] objs, int index)
+        {
+            List<string> retList = ABuildPrefs.SelectedScenesForBuild.ToList();
+
+            int count = 0;
+            foreach (Object obj in objs)
+            {
+                if (obj is SceneAsset scene)
+                {
+                    string path = Path.Join(
+                        Application.dataPath,
+                        AssetDatabase.GetAssetPath(scene));
+
+                    retList.Insert(index + count, path);
+                    count++;
+                }
+            }
+
+            ABuildPrefs.SelectedScenesForBuild = retList.ToArray();
+
+            _scenePathList = null; // Rebuild list
+            ResetSceneCount();
         }
         #endregion
     }

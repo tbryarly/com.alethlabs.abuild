@@ -29,7 +29,17 @@ namespace AlethEditor.Prefs
         /// <summary>
         /// Include all scenes in folder.
         /// </summary>
-        AllScenes = 8
+        AllScenes = 8,
+
+        /// <summary>
+        /// Explicitly select scenes to include.
+        /// </summary>
+        SelectScenes = 16,
+
+        /// <summary>
+        /// Use Demo values.
+        /// </summary>
+        IsDemo = 128,
     }
 
     public static class ABuildPrefs
@@ -62,9 +72,70 @@ namespace AlethEditor.Prefs
         public static ProjectScopes DebugUpdateContext;
 
         [EditorPref]
-        public static IncludeSceneLocations BuildSceneLocations = IncludeSceneLocations.UseBuildSettings;
+        public static IncludeSceneLocations _buildSceneLocations = IncludeSceneLocations.UseBuildSettings;
+        public static IncludeSceneLocations BuildSceneLocations
+        {
+            get
+            {
+                return _buildSceneLocations & ~IncludeSceneLocations.IsDemo;
+            }
+            set
+            {
+                _buildSceneLocations = value;
+            }
+        }
+
+        [EditorPref]
+        public static string[] SelectedScenesForBuild = new string[] { };
 
         [EditorPref]
         public static string[] BuildSceneFolders = new string[] { };
+
+        [EditorPref]
+        public static bool ShowDemoBuild = false;
+
+        [EditorPref]
+        public static DebugLevels DemoABuildPackageDebugLevels = DebugLevels.Silent;
+
+        [EditorPref]
+        public static DebugLevels DemoABuildDebugLevels = DebugLevels.Silent;
+
+        [EditorPref("BuildColWidth")]
+        public static float DemoBuildColWidth = 200f;
+
+        [EditorPref]
+        public static BuildGroups DemoBuildGroup = BuildGroups.Windows;
+
+        [EditorPref]
+        public static BuildArchs DemoBuildArch = BuildArchs.x86_64;
+
+        [EditorPref]
+        public static string DemoBuildPath = "";
+
+        [EditorPref]
+        public static bool DemoRunDeepProfile = false;
+
+        [EditorPref]
+        public static ProjectScopes DemoDebugUpdateContext;
+
+        [EditorPref]
+        public static IncludeSceneLocations _demoBuildSceneLocations = IncludeSceneLocations.UseBuildSettings;
+        public static IncludeSceneLocations DemoBuildSceneLocations 
+        { 
+            get 
+            { 
+                return _demoBuildSceneLocations | IncludeSceneLocations.IsDemo; 
+            } 
+            set
+            {
+                 _demoBuildSceneLocations = value;
+            }
+        }
+
+        [EditorPref]
+        public static string[] DemoBuildSceneFolders = new string[] { };
+
+        [EditorPref]
+        public static string[] SelectedDemoScenesForBuild = new string[] { };
     }
 }

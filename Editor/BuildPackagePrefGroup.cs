@@ -1,14 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Aleth.Prefs;
 using AlethEditor.Prefs;
 using AlethEditor.Utils;
+using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace AlethEditor.Prefs
 {
     public class BuildPackagePrefGroup : APrefGroup
     {
+        private const string DEMO_BUILD_KEY = "DEMO_BUILD";
+
         #region APrefGroup
         public override string HeaderName { get { return "Package Options"; } }
 
@@ -40,11 +45,20 @@ namespace AlethEditor.Prefs
         {
             Rect rect = GUILayoutUtility.GetLastRect();
 
-            ABuildPrefs.ABuildPackageDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildPackageDebugLevels, "Package Debug Level");
+            ABuildPrefs.ABuildPackageDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(
+                ABuildPrefs.ABuildPackageDebugLevels, 
+                "Package Debug Level");
+
+            ABuildPrefs.ShowDemoBuild = EditorPrefAttribute.DrawBoolWithDefineSymbol(
+                ABuildPrefs.ShowDemoBuild,
+                "Show Demo Build",
+                DEMO_BUILD_KEY);
 
             rect.height = (GUILayoutUtility.GetLastRect().y - rect.y) + GUILayoutUtility.GetLastRect().height;
             return rect;
-        }        
+        }
+
+
         #endregion
     }
 }

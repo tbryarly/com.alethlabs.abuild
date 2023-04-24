@@ -94,7 +94,7 @@ namespace AlethEditor.Build
             string dir = Path.GetDirectoryName(path);
             if (!Directory.Exists(dir))
             {
-                Debug.LogError($"{path} does not exist.");
+                //Debug.LogError($"{path} does not exist.");
                 return default;
             }
 
