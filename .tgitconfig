@@ -1,0 +1,4 @@
+[hook "postpush"]
+	cmdline = c:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -ExecutionPolicy RemoteSigned -File \"./UpdateVerdaccio.ps1\"
+	wait = true
+	show = true

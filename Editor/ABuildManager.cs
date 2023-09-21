@@ -18,6 +18,14 @@ namespace AlethEditor.Build
         x86_64 = 2 
     }
 
+    public enum BuildMarketplaces
+    {
+        None = 0,
+        Steam = 1,
+        Epic = 2,
+        Itch = 4,        
+    }
+
     public static class ABuildManager
     {
         public static event EventHandler OnBeforeBuild;

@@ -60,6 +60,9 @@ namespace AlethEditor.Prefs
         public static BuildArchs BuildArch = BuildArchs.x86_64;
 
         [EditorPref]
+        public static BuildMarketplaces BuildMarketplace = BuildMarketplaces.None;
+
+        [EditorPref]
         public static string BuildPath = "";
 
         [EditorPref]

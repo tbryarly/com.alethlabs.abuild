@@ -98,9 +98,28 @@ namespace AlethEditor.Prefs
         
             ABuildPrefs.BuildGroup = (BuildGroups)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildGroup, "Targets");
             ABuildPrefs.BuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildArch, "Architecture");
+
+            BuildMarketplaces checkMarketplace = (BuildMarketplaces)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildMarketplace, "Marketplace");
+            if (ABuildPrefs.BuildMarketplace != checkMarketplace)
+            {
+                if (ABuildPrefs.BuildMarketplace.GetBuildDefine() is string def && 
+                    string.IsNullOrWhiteSpace(def) == false)
+                {
+                    EditorPrefAttribute.RemoveDefineSymbol(def);
+                }
+
+                ABuildPrefs.BuildMarketplace = checkMarketplace;
+
+                if (ABuildPrefs.BuildMarketplace.GetBuildDefine() is string def2 &&
+                    string.IsNullOrWhiteSpace(def2) == false)
+                {
+                    EditorPrefAttribute.AddDefineSymbol(def2);
+                }
+            }
+
             DrawOutputPath();
 
-            //ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.IsDebugBuild, "Debug Build");
+            
             ABuildPrefs.IsDebugBuild = (bool)EditorPrefAttribute.DrawBoolWithDefineSymbol(
                 ABuildPrefs.IsDebugBuild, 
                 "Debug Build", 
