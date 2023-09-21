@@ -16,5 +16,20 @@
                     return "";
             }
         }
+
+        public static string GetBuildUndefine(this BuildMarketplaces marketplace)
+        {
+            switch (marketplace)
+            {
+                case BuildMarketplaces.Steam:
+                    return "DISABLESTEAMWORKS";
+                case BuildMarketplaces.Epic:
+                    return "";
+                case BuildMarketplaces.Itch:
+                    return "";
+                default:
+                    return "";
+            }
+        }
     }
 }

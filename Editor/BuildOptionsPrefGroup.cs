@@ -108,7 +108,19 @@ namespace AlethEditor.Prefs
                     EditorPrefAttribute.RemoveDefineSymbol(def);
                 }
 
+                if (ABuildPrefs.BuildMarketplace.GetBuildUndefine() is string undef &&
+                    string.IsNullOrWhiteSpace(undef) == false)
+                {
+                    EditorPrefAttribute.AddDefineSymbol(undef);
+                }   
+
                 ABuildPrefs.BuildMarketplace = checkMarketplace;
+
+                if (ABuildPrefs.BuildMarketplace.GetBuildUndefine() is string undef2 &&
+                    string.IsNullOrWhiteSpace(undef2) == false)
+                {
+                    EditorPrefAttribute.RemoveDefineSymbol(undef2);
+                }
 
                 if (ABuildPrefs.BuildMarketplace.GetBuildDefine() is string def2 &&
                     string.IsNullOrWhiteSpace(def2) == false)
