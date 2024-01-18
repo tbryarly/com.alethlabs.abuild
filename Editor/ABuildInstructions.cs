@@ -229,7 +229,7 @@ namespace AlethEditor.Build
             if (locations.HasFlag(IncludeSceneLocations.AllScenes))
                 return FindAllScenes();
 
-            Debug.Log(locations);
+            //Debug.Log(locations);
             if (locations.HasFlag(IncludeSceneLocations.LocalFolders) ||
                 locations.HasFlag(IncludeSceneLocations.LocalFoldersRecursive))
             {
