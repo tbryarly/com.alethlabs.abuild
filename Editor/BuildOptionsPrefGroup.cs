@@ -153,7 +153,8 @@ namespace AlethEditor.Prefs
                 ABuildManager.BuildAll(ABuildPrefs.BuildGroup, 
                                        ABuildPrefs.BuildArch, 
                                        ABuildPrefs.IsDebugBuild, 
-                                       ABuildPrefs.RunDeepProfile);
+                                       ABuildPrefs.RunDeepProfile,
+                                       ABuildPrefs.DetailedBuildReport);
                 GUIUtility.ExitGUI();
             }
 
@@ -203,6 +204,8 @@ namespace AlethEditor.Prefs
             ABuildPrefs.ABuildDebugLevels = (DebugLevels)EditorPrefAttribute.DrawPref(ABuildPrefs.ABuildDebugLevels, "Build Debug Level");
 
             ABuildPrefs.RunDeepProfile = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.RunDeepProfile, "Deep Profile");
+
+            ABuildPrefs.DetailedBuildReport = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.DetailedBuildReport, "Detailed Build Report");
         }
 
         private void DrawSceneLocations()

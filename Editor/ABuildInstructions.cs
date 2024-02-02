@@ -57,7 +57,8 @@ namespace AlethEditor.Build
         /// </summary>
         public static void WindowsBuild(bool x64 = true,
                                         bool debug = false,
-                                        bool deepProfile = false)
+                                        bool deepProfile = false,
+                                        bool detailedBuildReport = false)
         {
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
             string path = Path.GetFullPath(GetBuildPath(BuildGroups.Windows));
@@ -78,6 +79,9 @@ namespace AlethEditor.Build
             {
                 buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
             }
+
+            if (detailedBuildReport)
+                buildPlayerOptions.options |= BuildOptions.DetailedBuildReport;
 
             Debug.Log($"Building {Application.productName} for Windows to {path}.\nx64: {x64}\nDebug: {debug}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
@@ -105,7 +109,8 @@ namespace AlethEditor.Build
                                       bool deepProfile = false,
                                       bool ForceDebugLogging = false,
                                       bool runBuild = false,
-                                      bool nukeSettings = true)
+                                      bool nukeSettings = true,
+                                      bool detailedBuildReport = false)
         {
             if (!x64)
             {
@@ -141,6 +146,9 @@ namespace AlethEditor.Build
                 buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
             }
 
+            if (detailedBuildReport)
+                buildPlayerOptions.options |= BuildOptions.DetailedBuildReport;
+
             Debug.Log($"Building {Application.productName} for Linux to {path}.\nx64: {x64}\nDebug: {debug}\nForce Debug Logging: {ForceDebugLogging}");
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
@@ -168,7 +176,8 @@ namespace AlethEditor.Build
                                     bool deepProfile = false,
                                     bool ForceDebugLogging = false,
                                     bool runBuild = false,
-                                    bool nukeSettings = true)
+                                    bool nukeSettings = true,
+                                    bool detailedBuildReport = false)
         {
             if (!x64)
             {
@@ -203,6 +212,9 @@ namespace AlethEditor.Build
             {
                 buildPlayerOptions.options |= BuildOptions.EnableDeepProfilingSupport;
             }
+
+            if (detailedBuildReport)
+                buildPlayerOptions.options |= BuildOptions.DetailedBuildReport;
 
             UnityEditor.Build.Reporting.BuildReport result = BuildPipeline.BuildPlayer(buildPlayerOptions);
 

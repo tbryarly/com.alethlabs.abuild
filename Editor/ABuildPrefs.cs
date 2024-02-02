@@ -72,6 +72,9 @@ namespace AlethEditor.Prefs
         public static bool RunDeepProfile = false;
 
         [EditorPref]
+        public static bool DetailedBuildReport = false;
+
+        [EditorPref]
         public static ProjectScopes DebugUpdateContext;
 
         [EditorPref]
@@ -117,6 +120,9 @@ namespace AlethEditor.Prefs
 
         [EditorPref]
         public static bool DemoRunDeepProfile = false;
+
+        [EditorPref]
+        public static bool DemoDetailedBuildReport = false;        
 
         [EditorPref]
         public static ProjectScopes DemoDebugUpdateContext;

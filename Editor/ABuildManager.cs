@@ -33,18 +33,23 @@ namespace AlethEditor.Build
         public static event EventHandler OnBeforeRunBuild;
         public static event EventHandler OnAfterRunBuild;
 
-        public static void BuildAll(BuildGroups groups, BuildArchs arch, bool isDebug, bool deepProfile)
+        public static void BuildAll(
+            BuildGroups groups, 
+            BuildArchs arch, 
+            bool isDebug, 
+            bool deepProfile,
+            bool detailedBuildReport)
         {
             OnBeforeBuild?.Invoke(null, null);
 
             if (groups.HasFlag(BuildGroups.Windows))
-                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
+                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
 
             if (groups.HasFlag(BuildGroups.Linux))
-                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
+                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
 
             if (groups.HasFlag(BuildGroups.Mac))
-                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile);
+                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
 
             OnAfterBuild?.Invoke(null, null);
         }
