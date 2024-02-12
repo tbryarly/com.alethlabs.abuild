@@ -20,7 +20,7 @@ namespace AlethEditor.Prefs
         { 
             get 
             { 
-                if (_sceneFolderList == null) 
+                if (_sceneFolderList == null || _sceneFolderList.count == 0) 
                 {
                     _sceneFolderList = new ReorderableList(ABuildPrefs.BuildSceneFolders, 
                                                           typeof(string),
@@ -44,7 +44,7 @@ namespace AlethEditor.Prefs
         {
             get
             {
-                if (_scenePathList == null)
+                if (_scenePathList == null || _scenePathList.count == 0)
                 {
                     _scenePathList = new ReorderableList(ABuildPrefs.SelectedScenesForBuild,
                                                           typeof(string),

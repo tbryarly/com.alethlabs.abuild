@@ -20,7 +20,7 @@ namespace AlethEditor.Prefs
         {
             get
             {
-                if (_sceneFolderList == null)
+                if (_sceneFolderList == null || _sceneFolderList.count == 0)
                 {
                     _sceneFolderList = new ReorderableList(ABuildPrefs.DemoBuildSceneFolders,
                                                           typeof(string),
@@ -44,7 +44,7 @@ namespace AlethEditor.Prefs
         {
             get
             {
-                if (_scenePathList == null)
+                if (_scenePathList == null || _scenePathList.count == 0)
                 {
                     _scenePathList = new ReorderableList(ABuildPrefs.SelectedDemoScenesForBuild,
                                                           typeof(string),
@@ -98,6 +98,37 @@ namespace AlethEditor.Prefs
 
             ABuildPrefs.DemoBuildGroup = (BuildGroups)EditorPrefAttribute.DrawPref(ABuildPrefs.DemoBuildGroup, "Targets");
             ABuildPrefs.DemoBuildArch = (BuildArchs)EditorPrefAttribute.DrawPref(ABuildPrefs.DemoBuildArch, "Architecture");
+
+            BuildMarketplaces checkMarketplace = (BuildMarketplaces)EditorPrefAttribute.DrawPref(ABuildPrefs.BuildMarketplace, "Marketplace");
+            if (ABuildPrefs.BuildMarketplace != checkMarketplace)
+            {
+                if (ABuildPrefs.BuildMarketplace.GetBuildDefine() is string def &&
+                    string.IsNullOrWhiteSpace(def) == false)
+                {
+                    EditorPrefAttribute.RemoveDefineSymbol(def);
+                }
+
+                if (ABuildPrefs.BuildMarketplace.GetBuildUndefine() is string undef &&
+                    string.IsNullOrWhiteSpace(undef) == false)
+                {
+                    EditorPrefAttribute.AddDefineSymbol(undef);
+                }
+
+                ABuildPrefs.BuildMarketplace = checkMarketplace;
+
+                if (ABuildPrefs.BuildMarketplace.GetBuildUndefine() is string undef2 &&
+                    string.IsNullOrWhiteSpace(undef2) == false)
+                {
+                    EditorPrefAttribute.RemoveDefineSymbol(undef2);
+                }
+
+                if (ABuildPrefs.BuildMarketplace.GetBuildDefine() is string def2 &&
+                    string.IsNullOrWhiteSpace(def2) == false)
+                {
+                    EditorPrefAttribute.AddDefineSymbol(def2);
+                }
+            }
+
             DrawOutputPath();
 
             // Debug build is shared with regular options
