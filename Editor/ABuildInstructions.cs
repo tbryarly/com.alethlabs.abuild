@@ -31,7 +31,7 @@ namespace AlethEditor.Build
         {
             // REVIEW: if multiple, fail!
             
-            string retString = ABuildPrefs.BuildPath; 
+            string retString = ABuildPrefs.ShowDemoBuild ? ABuildPrefs.DemoBuildPath : ABuildPrefs.BuildPath; 
 
             retString += $"/{buildGroup}/";
 
