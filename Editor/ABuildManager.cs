@@ -37,19 +37,20 @@ namespace AlethEditor.Build
             BuildGroups groups, 
             BuildArchs arch, 
             bool isDebug, 
+            bool isPlaytest,
             bool deepProfile,
             bool detailedBuildReport)
         {
             OnBeforeBuild?.Invoke(null, null);
 
             if (groups.HasFlag(BuildGroups.Windows))
-                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
+                ABuildInstructions.WindowsBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, isPlaytest, deepProfile, detailedBuildReport);
 
             if (groups.HasFlag(BuildGroups.Linux))
-                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
+                ABuildInstructions.LinuxBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, isPlaytest, deepProfile, detailedBuildReport);
 
             if (groups.HasFlag(BuildGroups.Mac))
-                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, deepProfile, detailedBuildReport);
+                ABuildInstructions.MacBuild(arch.HasFlag(BuildArchs.x86_64), isDebug, isPlaytest, deepProfile, detailedBuildReport);
 
             OnAfterBuild?.Invoke(null, null);
         }

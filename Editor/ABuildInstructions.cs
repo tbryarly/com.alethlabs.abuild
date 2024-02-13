@@ -39,6 +39,8 @@ namespace AlethEditor.Build
 
             retString += ABuildPrefs.ShowDemoBuild ? "Demo/" : "";
 
+            retString += ABuildPrefs.IsPlaytestBuild ? "Playtest/" : "";
+
             retString += ABuildPrefs.IsDebugBuild ? "Debug/" : "Production/";
 
             retString += Application.productName;
@@ -57,6 +59,7 @@ namespace AlethEditor.Build
         /// </summary>
         public static void WindowsBuild(bool x64 = true,
                                         bool debug = false,
+                                        bool isPlaytest = false,
                                         bool deepProfile = false,
                                         bool detailedBuildReport = false)
         {
@@ -106,6 +109,7 @@ namespace AlethEditor.Build
         /// </summary>
         public static void LinuxBuild(bool x64 = true,
                                       bool debug = false,
+                                      bool isPlaytest = false,
                                       bool deepProfile = false,
                                       bool ForceDebugLogging = false,
                                       bool runBuild = false,
@@ -173,6 +177,7 @@ namespace AlethEditor.Build
         /// </summary>
         public static void MacBuild(bool x64 = true,
                                     bool debug = false,
+                                    bool isPlaytest = false,
                                     bool deepProfile = false,
                                     bool ForceDebugLogging = false,
                                     bool runBuild = false,

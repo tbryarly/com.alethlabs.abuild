@@ -143,6 +143,11 @@ namespace AlethEditor.Prefs
                 DrawDebugOptions();
             }
 
+            ABuildPrefs.IsPlaytestBuild = (bool)EditorPrefAttribute.DrawBoolWithDefineSymbol(
+                ABuildPrefs.IsPlaytestBuild,
+                "Playtest Build",
+                BuildOptionsPrefGroup.PLAYTEST_BUILD_KEY);
+
             ABuildPrefs.DemoDetailedBuildReport = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.DemoDetailedBuildReport, "Detailed Build Report");
 
             EditorGUILayout.Space();
@@ -156,6 +161,7 @@ namespace AlethEditor.Prefs
                 ABuildManager.BuildAll(ABuildPrefs.DemoBuildGroup,
                                        ABuildPrefs.DemoBuildArch,
                                        ABuildPrefs.IsDebugBuild,
+                                       ABuildPrefs.IsPlaytestBuild,
                                        ABuildPrefs.DemoRunDeepProfile,
                                        ABuildPrefs.DemoDetailedBuildReport);
                 GUIUtility.ExitGUI();

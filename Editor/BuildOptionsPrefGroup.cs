@@ -14,6 +14,7 @@ namespace AlethEditor.Prefs
     public class BuildOptionsPrefGroup : APrefGroup
     {
         public const string DEBUG_BUILD_KEY = "DEBUG_BUILD";
+        public const string PLAYTEST_BUILD_KEY = "PLAYTEST_BUILD";
 
         private ReorderableList _sceneFolderList;
         protected ReorderableList SceneFolderList
@@ -136,11 +137,16 @@ namespace AlethEditor.Prefs
                 ABuildPrefs.IsDebugBuild, 
                 "Debug Build", 
                 DEBUG_BUILD_KEY);
-
+            
             if (ABuildPrefs.IsDebugBuild)
             {
                 DrawDebugOptions();
             }
+
+            ABuildPrefs.IsPlaytestBuild = (bool)EditorPrefAttribute.DrawBoolWithDefineSymbol(
+                ABuildPrefs.IsPlaytestBuild, 
+                "Playtest Build", 
+                PLAYTEST_BUILD_KEY);            
 
             ABuildPrefs.DetailedBuildReport = (bool)EditorPrefAttribute.DrawPref(ABuildPrefs.DetailedBuildReport, "Detailed Build Report");
 
@@ -155,6 +161,7 @@ namespace AlethEditor.Prefs
                 ABuildManager.BuildAll(ABuildPrefs.BuildGroup, 
                                        ABuildPrefs.BuildArch, 
                                        ABuildPrefs.IsDebugBuild, 
+                                       ABuildPrefs.IsPlaytestBuild,
                                        ABuildPrefs.RunDeepProfile,
                                        ABuildPrefs.DetailedBuildReport);
                 GUIUtility.ExitGUI();

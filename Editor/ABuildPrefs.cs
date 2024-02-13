@@ -69,6 +69,9 @@ namespace AlethEditor.Prefs
         public static bool IsDebugBuild = false;
 
         [EditorPref]
+        public static bool IsPlaytestBuild = false;
+
+        [EditorPref]
         public static bool RunDeepProfile = false;
 
         [EditorPref]
