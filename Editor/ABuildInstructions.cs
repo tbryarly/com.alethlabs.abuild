@@ -49,6 +49,8 @@ namespace AlethEditor.Build
                 retString += ".exe";
             else if (buildGroup == BuildGroups.Linux)
                 retString += ((int)ABuildPrefs.BuildArch == 2) ? ".x86_64" : ".x86";
+            else if (buildGroup == BuildGroups.Mac)
+                retString += ".app";
 
             return retString;
         }
